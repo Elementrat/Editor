@@ -1,0 +1,22 @@
+{
+  "name": "superinternshiprpg",
+  "version": "0.0.0",
+  "authors": [
+    "Alex Sohail <elementrat@gmail.com>"
+  ],
+  "description": "asdasd",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.14",
+    "pixi": "~1.5.1",
+    "jquery": "~2.1.0"
+  }
+}

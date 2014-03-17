@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" ng-app="editor">
+<head>
+	<meta charset="UTF-8">
+	<title>Editor</title>
+	<script type="text/javascript" src = "../bower_components/angular/angular.js"></script>
+	<script type="text/javascript" src = "../bower_components/pixi/bin/pixi.js"></script>
+	<script type="text/javascript" src = "../bower_components/jquery/dist/jquery.js"></script>
+	<script type="text/javascript" src = "js/all_editor.js"></script>
+	<link rel = "stylesheet" type = "text/css" href = "styles/main.css"/> 
+</head>
+
+<body>  
+
+<div id = "lpanel" class = "sidepanel">
+
+	<div class = "panelSection" id = "worldSection"> <div class = "sectionName">
+Name
+<input id = "worldName" value = "world1" size="16">  </div> 
+	
+	<div class = "right">
+		Grid:
+	<input type = "text" value = "50" maxlength = "4" size = "3">
+	 x
+	 <input type = "text" value = "50" maxlength = "4" size = "3">
+	</div>
+	
+	<div class = "right">
+	Tiles:
+	<input type = "text" value = "50" maxlength = "4" size = "3">
+	x
+	<input type = "text" value = "50" maxlength = "4" size = "3">
+</div>
+Total Size: 2500px
+
+	</div>
+
+	<div class = "panelSection" id = "toolSection" ng-controller = "ToolCtrl"> <div class = "sectionName">
+		Tools
+		 </div> 
+
+		<div class = "btn" ng-repeat = "tool in tools"> {{tool}}</div>
+
+	</div>
+
+	<div class = "panelSection" id = "entityAndObjectSection" ng-controller = "EntityTileCtrl"> 
+
+		<div class = "sectionName">Entities And Objects </div>
+		<input type = "text" value = "Search"> 
+		<div class = "btn" ng-repeat = "tile in tiles" id = "btn{{tile}}" ng-click="selectTile(tile)"> {{tile}}</div>
+		<div class = "btn" ng-click="newTile()">+</div>
+	</div>
+
+</div>
+
+<div id = "rpanel" class = "sidepanel"> 
+
+	<div class = "panelSection" id = "resourcesSection">
+		<div class = "sectionName">Images </div>
+	</div>
+
+	<div class = "panelSection" id = "layersSection">
+		<div class = "sectionName">Layers </div>
+	</div>
+
+	<div class = "panelSection" id = "classesAndInstancesSection">
+		<div class = "sectionName">Classes And Instances </div>
+		<div id = "selectedName"> </div>
+		<div class = "highlightedBox"> </div>
+	</div>
+
+</div>
+
+</body>
+<div id = "renderContainer"></div>
+</html>

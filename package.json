@@ -1,0 +1,21 @@
+{
+  "name": "superinternshiprpg",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD",
+  "dependencies": {
+    "express": "~3.4.8"
+  },
+  "devDependencies": {
+    "gulp-livereload": "^1.2.0",
+    "gulp-sass": "^0.7.1",
+    "gulp-concat": "^2.1.7",
+    "gulp-jshint": "^1.5.0",
+    "gulp": "^3.5.6"
+  }
+}

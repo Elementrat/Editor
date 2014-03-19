@@ -1,14 +1,19 @@
 .sidepanel {
   width: 200px;
-  height: 100%;
+  height: 96%;
   background-color: #111111;
-  color: #eeeeee;
-  position: absolute; }
+  color: #aaa;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  position: absolute;
+  padding: 15px 15px;
+  overflow: hidden; }
   .sidepanel .panelSection {
     width: 100%;
     min-height: 50px;
-    border: 1px solid #222222;
-    padding: 5px 5px; }
+    border-bottom: 1px solid #222222;
+    padding-bottom: 10px;
+    margin-bottom: 10px; }
     .sidepanel .panelSection div:nth-child(n) {
       margin-bottom: 5px; }
     .sidepanel .panelSection .sectionName {
@@ -20,6 +25,7 @@
   .sidepanel #entityAndObjectSection {
     height: 100%; }
     .sidepanel #entityAndObjectSection input {
+      width: 94%;
       color: #666;
       margin-bottom: 10px; }
   .sidepanel #classesAndInstancesSection {
@@ -47,9 +53,19 @@
   overflow: hidden; }
 
 html {
-  font-family: 'Arial', 'Sans serif'; }
+  font-family: 'Arial', 'Sans serif';
+  overflow: hidden; }
 
 
+canvas {
+  overflow: hidden; }
+
+.dragPointer {
+  cursor: pointer; }
+
+.icon_grid {
+  background-size: cover;
+  background-image: url('../img/icon_grid.png'); }
 
 input {
   background-color: #222222;
@@ -58,9 +74,31 @@ input {
   color: #FFFFFF;
   padding: 5px 5px; }
 
+.v40 {
+  line-height: 40px;
+  margin-right: 10px; }
+
+.fleft {
+  float: left; }
+
 .right {
   float: right;
   margin-right: 20px; }
+
+.layer {
+  background-color: #111111;
+  padding: 5px 5px; }
+
+.activeLayer {
+  background-color: #333333; }
+
+.flatBtn {
+  background-color: #222222;
+  padding: 10px 10px;
+  cursor: pointer; }
+
+.flatBtn:hover {
+  background-color: #FFFFFF; }
 
 #renderContainer {
   z-index: -1;
@@ -76,17 +114,23 @@ input {
   float: right; }
 
 .btn {
-  width: 45px;
-  height: 45px;
-  border: 1px solid #000000;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.05);
   text-align: center;
   line-height: 45px;
-  cursor: pointer; }
+  cursor: pointer;
+  margin-right: 2px; }
+
+.50 {
+  width: 100px; }
+
+.btnSelected {
+  border: 2px solid rgba(255, 255, 255, 0.5); }
 
 .highlightedBox {
   width: 70px;
-  height: 70px;
-  border: 1px solid #FFFFFF; }
+  height: 70px; }
 
 .btn:hover {
-  border: 1px solid #FFFFFF; }
+  border: 2px solid #FFFFFF; }

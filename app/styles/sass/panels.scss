@@ -1,6 +1,15 @@
 $brightTextC:#aaa; 
 $greyTextC: #666; 
 
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+
 .sidepanel{
 	width:200px;   
 	height:96%;
@@ -11,6 +20,11 @@ $greyTextC: #666;
 	position:absolute;
 	padding:15px 15px; 
 	overflow:hidden;
+
+	.gridInput{
+		width:32%;
+	}
+
 	.panelSection{  
 		width:100%;
 		min-height: 50px;
@@ -43,6 +57,10 @@ $greyTextC: #666;
 	}
 	#classesAndInstancesSection{
 		height:100%;
+	}
+
+	#layersSection{
+		
 	}
 }
 

@@ -1,19 +1,20 @@
 var stage;
 var renderer;
 var editor;
-var bunnyTexture
-var gridContainer;
-var tileTexture = PIXI.Texture.fromImage("img/tile.jpg");
-var gridBorder;
-var gridOverlay;
-var editorUnderWorld;
-var editorOverWorld;
+var user;
+var textures = {}
+var testResources = {};
 
 $(document).ready(function() {
+    textures.empty = PIXI.Texture.fromImage("img/tile_empty.png");
+    textures.basic = PIXI.Texture.fromImage("img/tile.jpg");
+    textures.testTex = PIXI.Texture.fromImage("img/tile_test.png")
     editor = new Editor();
-    centerCamera();
-    resetGrid();
-    drawOverlays();
+
+    user = angular.element(document.querySelector('[ng-controller]')).injector().get('userService')
+
+    editor.centerCamera();
+    editor.drawOverlays();
     requestAnimationFrame(animate);
 
     function animate() {
@@ -22,203 +23,187 @@ $(document).ready(function() {
     }
 })
 
-$(window).keydown(function(e) {
-    //z
-    if (e.keyCode == 90) {
-        toggleZen();
-    }
-
-    if (e.keyCode == 16) {
-        editor.scroll = true;
-        $("canvas").css("cursor", "move")
-    }
-})
-
-$(window).on("mousewheel", function(e) {
-    if(config){
-        config.scale += e.deltaY / 10.0;
-        gridContainer.scale.x += e.deltaY / 10.0
-        gridContainer.scale.y += e.deltaY / 10.0
-    }
-})
-
-$(window).keyup(function(e) {
-    if (e.keyCode == 16) {
-        editor.scroll = false;
-        $("canvas").css("cursor", "default")
-    }
-})
-
-var toggleZen = function() {
-    zen = !zen;
-    if (zen) {
-        $("#lpanel").animate({
-            'left': '0px'
-        }, config.tweenTimes.zen)
-        $("#rpanel").animate({
-            'right': '0px'
-        }, config.tweenTimes.zen)
-    } else {
-        $("#lpanel").animate({
-            'left': '-400px'
-        }, config.tweenTimes.zen)
-        $("#rpanel").animate({
-            'right': '-400px'
-        }, config.tweenTimes.zen)
-    }
-}
 
 var Editor = function() {
-    this.scroll = false;
-    this.zen    = false;
-    this.mouse  = {x: 0, y : 0}
-    this.initialized = false;
+    gridContainer = new PIXI.Graphics();
+    gridBorder = new PIXI.Graphics();
+    gridOverlay = new PIXI.Graphics();
+    editorUnderWorld = new PIXI.Graphics();
+    editorOverWorld = new PIXI.Graphics();
+    cellHighlight = new PIXI.Graphics();
+
+    this.displays = {
+        gridContainer: gridContainer,
+        gridBorder: gridBorder,
+        gridOverlay: gridOverlay,
+        editorUnderWorld: editorUnderWorld,
+        editorOverWorld: editorOverWorld,
+        cellHighlight: cellHighlight
+    }
 
     screenStats = detectScreen();
-    gridContainer = new PIXI.Graphics();
-    gridBorder  = new PIXI.Graphics();
-    gridOverlay = new PIXI.Graphics();
-    editorOverWorld = new PIXI.Graphics();
-    editorUnderWorld = new PIXI.Graphics();
+
     renderer = new PIXI.autoDetectRenderer(screenStats.x, screenStats.y);
-
-    $(window).resize(function() {
-        screenStats = detectScreen();
-        renderer.resize(screenStats.x, screenStats.y)
-    })
-
-    $("#renderContainer").mousedown(function(g) {
-        //  scrolling = true;
-    })
-    $("#renderContainer").mouseup(function(g) {
-        // scrolling = false;
-    })
-
-    $("#objectSearch").click(function(e) {
-        e.currentTarget.value = "";
-    })
-
-    $("#renderContainer").mousemove(function(e) {
-        if (editor.scroll) {
-            gridContainer.x += e.clientX - editor.mouse.x
-            gridContainer.y += e.clientY - editor.mouse.y;
-        }
-        editor.mouse.x = e.clientX;
-        editor.mouse.y = e.clientY;
-    })
-
-    $("#colorPickerBox").change(function() {
-        console.log("huh")
-    })
-
     $("#renderContainer").append(renderer.view);
+
     stage = new PIXI.Stage;
-    stage.setBackgroundColor("0x333333")
+    stage.setBackgroundColor("0x222222")
 
     editorUnderWorld.addChild(gridBorder);
     gridContainer.addChild(editorUnderWorld)
 
+    //Tiles and Entities go in layers
+    gridContainer.layerList = new PIXI.Graphics();
+    gridContainer.addChild(gridContainer.layerList)
+
     editorOverWorld.addChild(gridOverlay);
+    editorOverWorld.addChild(cellHighlight);
+
     gridContainer.addChild(editorOverWorld);
 
     stage.addChild(gridContainer)
+    listenToEvents();
+    //document.getElementById("mainBody").requestFullscreen();
 
-}
-
-    function drawOverlays() {
-        if(editor){
-        if (stage) {
-            gridBorder.clear();
-            gridOverlay.clear();
-
-            if (config.showGrid) {
-                gridBorder.beginFill('0x000000', 1);
-
-                //rx = gridContainer.x;
-                // ry = gridContainer.y;
-                var borderW = 10;
-                //outlne
-
-                //gridBorder.drawRect(0,200,800,800)
-                console.log('wat')
-
-                var rootX = -wld.tileSize * wld.columns / 2
-                var rootY = -wld.tileSize * wld.rows / 2;
-
-                gridBorder.drawRect(rootX - borderW / 2, rootY - borderW / 2, wld.columns * wld.tileSize + borderW, wld.rows * wld.tileSize + borderW);
-                gridBorder.endFill();
-
-                gridOverlay.clear();
-                gridOverlay.lineStyle(2, '0x222222', 1);
-
-                //vertical
-                gridOverlay.moveTo(rootX, rootY)
-
-                //horizontal
-                for (var y = 0; y < wld.rows + 1; y++) {
-                    //console.log(y)
-                    gridOverlay.moveTo(rootX, rootY + y * wld.tileSize)
-                    gridOverlay.lineTo(rootX + wld.tileSize * wld.columns, rootY + wld.tileSize * y)
-                }
-
-                //vertical
-                for (var x = 0; x < wld.columns + 1; x++) {
-                    //console.log(y)
-                    gridOverlay.moveTo(x * wld.tileSize + rootX, rootY)
-                    gridOverlay.lineTo(x * wld.tileSize + rootX, rootY + wld.tileSize * wld.rows)
-                }
-            }
-        }
-     }
-    }
-
-    function resetGrid() {
-        if (stage) {
-            // gridContainer.x = detectScreen().x / 2;
-            // gridContainer.y = detectScreen().y / 2;
-            /*
-            while(gridContainer.children[0]){
-               // gridContainer.removeChild(gridContainer.children[0])
-            }*/
-            //updateGridSprites();
+    this.toggleZen = function() {
+        user.data.zen = !user.data.zen;
+        if (!user.data.zen) {
+            $("#lpanel").animate({
+                'left': '0px'
+            }, user.data.tweenTimes.zen)
+            $("#rpanel").animate({
+                'right': '0px'
+            }, user.data.tweenTimes.zen)
+        } else {
+            $("#lpanel").animate({
+                'left': '-400px'
+            }, user.data.tweenTimes.zen)
+            $("#rpanel").animate({
+                'right': '-400px'
+            }, user.data.tweenTimes.zen)
         }
     }
 
-    function updateGridSprites() {
-        wld.grid = Array();
-        for (var y = 0; y < wld.rows; y++) {
-            wld.grid[y] = Array()
-            for (var x = 0; x < wld.columns; x++) {
-                wld.grid[y][x] = 'tile'
-            }
-        }
-        //for every row
-        for (var y = 0; y < wld.grid.length; y++) {
-            //for every columnc
-            for (var x = 0; x < wld.grid[0].length; x++) {
-                var bunny = new PIXI.Sprite(tileTexture);
-                bunny.width = wld.tileSize;
-                bunny.height = wld.tileSize;
-                bunny.x = x * wld.tileSize;
-                bunny.y = y * wld.tileSize;
-                gridContainer.addChild(bunny);
-            }
-        }
-        centerCamera();
-    }
-
-    function centerCamera() {
-        var totalX = wld.columns * wld.tileSize;
-        var totalY = wld.rows * wld.tileSize;
+    this.centerCamera = function() {
+        var totalX = user.world.columns * user.world.tileSize;
+        var totalY = user.world.rows * user.world.tileSize;
         var scnCenter = detectScreen()
-
         gridContainer.x = scnCenter.x / 2;
         gridContainer.y = scnCenter.y / 2;
     }
+
+
+    this.updateMousePos = function(x, y) {
+        if ((x != -1) && (y != -1)) {
+            if (user.data.mouse.down) {
+                if ((this.xPos != x) || (this.yPos != y)) {
+                    if (user.data.selectedTool == 'pnt') {
+                        user.paintTile(x, y);
+                    }
+                    if (user.data.selectedTool == 'ers') {
+                        user.eraseTile(x, y);
+                    }
+                }
+            }
+        }
+        this.xPos = x;
+        this.yPos = y;
+    }
+
+
+    this.drawOverlays = function() {
+        if (editor) {
+            if (stage) {
+                gridBorder.clear();
+                gridOverlay.clear();
+
+                var borderW = 10;
+                var rootX = -user.world.tileSize * user.world.columns / 2
+                var rootY = -user.world.tileSize * user.world.rows / 2;
+
+                var tSize = user.world.tileSize;
+
+
+                //cell highlight
+                if (editor.xPos != -1 && editor.yPos != -1) {
+                    cellHighlight.clear();
+                    if (!user.data.selecting) {
+
+                        cellHighlight.lineStyle(2, '0xFFFFFF', 1)
+                        cellHighlight.moveTo(rootX + left * tSize, rootY + top * tSize)
+                        cellHighlight.drawRect(rootX + editor.xPos * tSize, rootY + editor.yPos * tSize, tSize, tSize);
+                    }
+
+                    if (user.data.selecting) {
+                        xSide = 0;
+                        ySide = 0;
+
+                        cellHighlight.lineStyle(2, '0xFFFFFF', 1)
+                        var left = Math.min(editor.xPos, editor.selectionRootXPos);
+                        var top = Math.min(editor.yPos, editor.selectionRootYPos);
+
+                        if (editor.xPos > editor.selectionRootXPos) {
+                            xSide = 1; //on the right
+                        }
+
+                        if (editor.yPos > editor.selectionRootYPos) {
+                            ySide = 1;
+                        }
+
+
+                        var bottom = Math.max(editor.yPos, editor.selectionRootYPos);
+                        var right = Math.max(editor.xPos, editor.selectionRootXPos);
+
+                        var width = Math.abs(right - left);
+                        var height = Math.abs(bottom - top);
+
+                        width += 1;
+                        height += 1;
+
+                        cellHighlight.moveTo(rootX + left * tSize, rootY + top * tSize)
+                        cellHighlight.drawRect(rootX + left * tSize, rootY + top * tSize, width * tSize, height * tSize);
+                    }
+                }
+
+                if (user.data.showGrid) {
+                    gridBorder.beginFill('0x111111', 1);
+                    gridBorder.lineStyle(borderW / 2, '0x000000', 1)
+                    //outlne
+                    gridBorder.drawRect(rootX - borderW / 2, rootY - borderW / 2, user.world.columns * tSize + borderW, user.world.rows * tSize + borderW);
+                    gridBorder.endFill();
+
+                    gridOverlay.clear();
+                    gridOverlay.lineStyle(2, '0x333333', 1);
+
+                    //vertical
+                    gridOverlay.moveTo(rootX, rootY)
+
+                    //horizontal
+                    for (var y = 0; y < user.world.rows + 1; y++) {
+                        //console.log(y)
+                        gridOverlay.moveTo(rootX, rootY + y * tSize)
+                        gridOverlay.lineTo(rootX + tSize * user.world.columns, rootY + tSize * y)
+                    }
+
+                    //vertical
+                    for (var x = 0; x < user.world.columns + 1; x++) {
+                        //console.log(x)
+                        gridOverlay.moveTo(x * tSize + rootX, rootY)
+                        gridOverlay.lineTo(x * tSize + rootX, rootY + tSize * user.world.rows)
+                    }
+                }
+            }
+        }
+    }
+}
 
     function detectScreen() {
         return {
             x: window.innerWidth,
             y: window.innerHeight
         };
+    }
+
+    function hashToHex(hash) {
+        return '0x' + hash.substring(1, hash.length);
     }

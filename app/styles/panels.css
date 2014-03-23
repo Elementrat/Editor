@@ -1,3 +1,9 @@
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0;
+  /* <-- Apparently some margin are still there even though it's hidden */ }
+
 .sidepanel {
   width: 200px;
   height: 96%;
@@ -8,6 +14,8 @@
   position: absolute;
   padding: 15px 15px;
   overflow: hidden; }
+  .sidepanel .gridInput {
+    width: 32%; }
   .sidepanel .panelSection {
     width: 100%;
     min-height: 50px;

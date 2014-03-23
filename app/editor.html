@@ -11,7 +11,7 @@
 		<script type="text/javascript" src = "js/all_editor.js"></script>
 		<link rel = "stylesheet" type = "text/css" href = "styles/main.css"/>
 	</head>
-	<body ng-controller="MainCtrl">
+	<body ng-controller="MainCtrl" id = "mainBody">
 		<div id = "lpanel" class = "sidepanel">
 			<div class = "panelSection" id = "worldSection"> <div class = "sectionName">
 				Name
@@ -19,30 +19,30 @@
 				
 				<div class = "right">
 					W
-					<input type = "text" value = "50" maxlength = "4" size = "3" ng-model="world.rows">
+					<input class = "gridInput" max = "999" type = "number" value = "50" size = "1" ng-model="world.rows" ng-change="resizeGrid('')">
 					H
-					<input type = "text" value = "50" maxlength = "4" size = "3" ng-model="world.columns">
+					<input class = "gridInput" max="999" type = "number" value = "50"  size = "1" ng-model="world.columns" ng-change="resizeGrid('')">
 				</div>
-				
+				  
 				<div class = "right">
 					Tile Size
-					<input type = "text" value = "50" maxlength = "4" size = "3" ng-model="world.tileSize">
+					<input class = "gridInput" type = "number" value = "50" maxlength = "4" size = "3" ng-model="world.tileSize">
 				</div>
 				<div class = "right">
 					Total Size: {{world.rows * world.columns * world.tileSize}}
 				</div>
-				<div class="btn icon_grid" ng-click="toggleGrid()" ng-class="{true :'btnSelected', false : 'btnDeselected'}[data.showGrid]"></div>
+				<div class="btn icon icon_grid" ng-click="toggleGrid()" ng-class="{true :'btnSelected', false : 'btnDeselected'}[data.showGrid]"></div>
 
 			</div>
 			<div class = "panelSection" id = "toolSection" ng-controller = "ToolCtrl">
 				<div class = "sectionName">
 					Tools
 				</div>
-				<div class = "btn" ng-repeat = "tool in tools" ng-class="{true :'btnSelected', false : 'btnDeselected'}[data.selectedTool==tool]" ng-click="selectTool(tool)">
-					{{tool}}
+				<div class = "btn icon {{'icon_'+tool}}" ng-repeat = "tool in tools" ng-class="{true :'btnSelected', false : 'btnDeselected'}[data.selectedTool==tool]" ng-click="selectTool(tool)">
+					
 				</div>
 			</div>
-			<div class = "panelSection" id = "entityAndObjectSection" ng-controller = "EntityTileCtrl">
+			<div class = "panelSection" id = "entityAndObjectSection" ng-controller = "EntityTileCtrl"> 
 				<div class = "sectionName">Tiles / Entities </div>
 				<div class="fleft v40">Mode:</div>
 				<div class = "btn 50" ng-class="{true:'btnSelected', false : 'btnDeselected'}[data.objectMode=='tile']" ng-click="selectObjectMode('tile')">
@@ -52,8 +52,9 @@
 					Entity
 				</div>
 				<input type = "text" value = "Search" id= "objectSearch">
-				<div class = "btn" ng-class="{true:'btnSelected', false : 'btnDeselected'}[data.selectedTile==tile]" ng-repeat = "(tile,value) in data.tiles" id = "btn{{tile}}" ng-click="selectTile(tile)"  ng-style="getTileDisplay(tile)"  > </div>  
+				<div class = "btn" ng-class="{true:'btnSelected', false : 'btnDeselected'}[data.selectedTile==tile]" ng-repeat = "(tile,value) in u.data.tiles" id = "btn{{tile}}" ng-click="selectTile(tile)"  ng-style="getTileDisplay(tile)"  > </div>  
 				<div class = "btn" ng-click="newTile()">+</div>
+
 			</div>
 		</div>
 		<div id = "rpanel" class = "sidepanel">
@@ -61,15 +62,27 @@
 				<div class = "sectionName">Images </div>
 				<div id = "browseBtn" class = "flatBtn"> Browse</div>
 			</div>
-			<div class = "panelSection" id = "layersSection">
+			<div class = "panelSection" id = "layersSection" ng-controller="LayersCtrl">
 				<div class = "sectionName">Layers </div>
-				<div class = "layer" ng-repeat = "layer in data.layers"  ng-class="{true:'activeLayer', false : 'inactiveLayer'}[data.activeLayer==layer]">{{layer}} </div>
+				<div class = "layer" ng-repeat = "(layer,val) in u.world.layers"  ng-class="{true:'activeLayer', false : 'inactiveLayer'}[data.activeLayer==layer]" ng-click="selectLayer(layer)">
+
+				<div class = "layerSelect">
+				<div class = "fleft">
+				 {{layer}} 
+				</div>
+				<div class = "fright deleteLayerBtn" ng-click="deleteLayer(layer)">
+				X
+				</div>
+				</div>
+
+				</div>
+				 <div id = "newLayerBtn" ng-click="newLayer()">New</div>
 			</div>
-			<div class = "panelSection" id = "classesAndInstancesSection" ng-controller="ClassesAndInstancesCtrl">
+			<div class = "panelSection" id = "classesAndInstancesSection" ng-controller="SelectedCtrl" ng-show="data.selectedTile!=''">
 				<div class = "sectionName">Selected </div>
 				<div id = "selectedName">&nbsp; {{data.selectedTile}}</div>
 				<div class = "highlightedBox" ng-style="getTileDisplay(data.selectedTile)"> </div>
-				<input class="color" id="colorPickerBox">
+				<input class="color" id="colorPickerBox" ng-click="updateColor()" value="hmm">
 			</div>
 		</div>
 	</body>

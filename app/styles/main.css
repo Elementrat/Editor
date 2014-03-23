@@ -1,3 +1,9 @@
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0;
+  /* <-- Apparently some margin are still there even though it's hidden */ }
+
 .sidepanel {
   width: 200px;
   height: 96%;
@@ -8,6 +14,8 @@
   position: absolute;
   padding: 15px 15px;
   overflow: hidden; }
+  .sidepanel .gridInput {
+    width: 32%; }
   .sidepanel .panelSection {
     width: 100%;
     min-height: 50px;
@@ -63,9 +71,23 @@ canvas {
 .dragPointer {
   cursor: pointer; }
 
+.icon {
+  background-size: cover; }
+
 .icon_grid {
-  background-size: cover;
   background-image: url('../img/icon_grid.png'); }
+
+.icon_pnt {
+  background-image: url('../img/icon_paint.png'); }
+
+.icon_sel {
+  background-image: url('../img/icon_select.png'); }
+
+.icon_ers {
+  background-image: url('../img/icon_erase.png'); }
+
+.icon_fll {
+  background-image: url('../img/icon_fill.png'); }
 
 input {
   background-color: #222222;
@@ -73,6 +95,9 @@ input {
   border: 1px solid #333333;
   color: #FFFFFF;
   padding: 5px 5px; }
+
+#newLayerBtn {
+  cursor: pointer; }
 
 .v40 {
   line-height: 40px;
@@ -87,10 +112,12 @@ input {
 
 .layer {
   background-color: #111111;
-  padding: 5px 5px; }
+  padding: 5px 5px;
+  line-height: 20px;
+  cursor: pointer; }
 
 .activeLayer {
-  background-color: #333333; }
+  background-color: #222222; }
 
 .flatBtn {
   background-color: #222222;
@@ -99,6 +126,11 @@ input {
 
 .flatBtn:hover {
   background-color: #FFFFFF; }
+
+.deleteLayerBtn {
+  width: 20px;
+  height: 20px;
+  float: right; }
 
 #renderContainer {
   z-index: -1;
@@ -114,8 +146,8 @@ input {
   float: right; }
 
 .btn {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border: 2px solid rgba(255, 255, 255, 0.05);
   text-align: center;
   line-height: 45px;

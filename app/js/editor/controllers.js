@@ -1,54 +1,15 @@
 var ang = angular.module('editor', [])
 
-ang.controller('MainCtrl', function(userService, $scope) {
+ang.controller('MainCtrl', ["$scope", "userService", function($scope, userService) {
 
-	$scope.data = {
-		zen: false,
-		selectedTool: 'sel',
-		selectedTile: '',
-		selectedEntity: '',
-		showGrid: true,
-		objectMode: 'tile',
-		activeLayer: 'tiles1',
-		layers: ['tiles1', 'entities1'],
-		entities: ['wot'],
-		tiles: tilesToLoad,
-		scale: 1,
-		showGrid: true,
-		tweenTimes: {
-			zen: 200
-		},
-	}
+	$scope.u = userService;
 
-	config = $scope.data;
+	$scope.data = userService.data;
+	$scope.world = userService.world;
 
-	$scope.world = {
-		grid: [
-			[]
-		],
-		tileSize: 40,
-		rows: 20,
-		columns: 20,
-		oldRows: 20, //need to clear out tiles
-		oldColumns: 20, //need to clear out tiles after ang changes
-		scale: 1,
-	}
-	wld = $scope.world;
-
-	$scope.$watchCollection('world', function(newValue, oldValue) {
-		if (editor) {
-			wld.rows = parseInt($scope.world.rows);
-			wld.columns = parseInt($scope.world.columns);
-			wld.tileSize = parseInt($scope.world.tileSize);
-			if (stage) {
-				if (editor) {
-					resetGrid();
-					centerCamera();
-					drawOverlays();
-				}
-			}
-		}
-	})
+	$scope.newLayer = userService.newLayer;
+	$scope.loadLayer = userService.loadLayer;
+	$scope.resizeLayer = userService.resizeLayer;
 
 	$scope.getTileDisplay = function(t) {
 		if ($scope.data.tiles[t]) {
@@ -58,16 +19,38 @@ ang.controller('MainCtrl', function(userService, $scope) {
 		}
 	}
 
+
+	$scope.$watchCollection('world', function(newValue, oldValue) {
+		console.log('worldChange')
+		if (editor) {
+			if (stage) {
+				editor.drawOverlays();
+				console.log(oldValue.rows)
+				if((newValue.rows != oldValue.rows) ||
+					(newValue.columns != oldValue.columns) ||
+					(newValue.tileSize != oldValue.tileSize)) 
+					{
+						console.log('cha cha cha changes')
+						$scope.u.resizeWorld();
+					}
+				
+				$scope.data.world = newValue.world;
+			}
+		}
+	})
+
 	$scope.toggleGrid = function() {
 		if (editor) {
 			$scope.data.showGrid = !$scope.data.showGrid;
-			drawOverlays();
+			editor.drawOverlays();
 		}
 	}
-})
+	//this needs to happen after editor is fully loaded.
+	$scope.u.init();
+}])
 
 .controller('ToolCtrl', function($scope) {
-	$scope.tools = ['sel', 'pnt', 'ers'];
+	$scope.tools = ['sel', 'pnt', 'fll', 'ers'];
 
 	$scope.selectTool = function(tawl) {
 		$scope.data.selectedTool = tawl;
@@ -75,37 +58,36 @@ ang.controller('MainCtrl', function(userService, $scope) {
 })
 
 .controller('EntityTileCtrl', function(userService, $scope) {
-	$scope.newTile = function() {
-		var nt = {
-			display: 'color',
-			color: '0x000000'
-		}
-		var id = Object.keys($scope.data.tiles).length.toString();
+	$scope.newTile = userService.newTile;
 
-		$scope.data.tiles[id] = nt;
-	}
 	$scope.selectTile = function(t) {
 		$scope.data.selectedTile = t;
+		$scope.data.selectedTool='pnt'
 	}
 	$scope.selectObjectMode = function(m) {
-		console.log($scope.data.tiles)
 		$scope.data.objectMode = m;
 	}
-
 })
+	.controller('LayersCtrl', function(userService, $scope) {
+		$scope.selectLayer = function(name) {
+			$scope.data.activeLayer = name.toString();
+		}
 
-.controller('ClassesAndInstancesCtrl', function(userService, $scope) {
+		$scope.deleteLayer = function(name) {
+			userService.deleteLayer(name)
+		}
 
-});
+	})
 
-ang.service('userService', function() {
-	var me = this;
-
-	this.selectTile = function(id) {
-		me.data.selectedTile = id;
+.controller('SelectedCtrl', function(userService, $scope) {
+	$scope.changeActiveTileDisplayColor = function(color) {
+		$scope.data.tiles[$scope.data.selectedTile].color = '#' + color.toString();
 	}
-})
 
-ang.service('editorService', function() {
+	$scope.updateColor = function() {
 
-})
+		var col = document.getElementById('colorPickerBox').value
+
+		$scope.changeActiveTileDisplayColor(col);
+	}
+});

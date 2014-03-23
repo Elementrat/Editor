@@ -22,9 +22,29 @@ canvas{
 	cursor:pointer;
 }
 
-.icon_grid{
+.icon{
 	background-size:cover;
+}
+
+.icon_grid{
+
 	background-image:url('../img/icon_grid.png');
+}
+
+.icon_pnt{
+	background-image:url('../img/icon_paint.png');
+}
+
+.icon_sel{
+	background-image:url('../img/icon_select.png');
+}
+
+.icon_ers{
+	background-image:url('../img/icon_erase.png');
+}
+
+.icon_fll{
+	background-image:url('../img/icon_fill.png');
 }
 
 input{
@@ -34,6 +54,11 @@ input{
 	color:#FFFFFF;
 	padding:5px 5px;
 }
+
+#newLayerBtn{
+	cursor:pointer;
+}
+
 
 .v40{
 	line-height:40px;
@@ -50,9 +75,11 @@ input{
 .layer{
 	background-color:#111111;
 	padding:5px 5px;
+	line-height:20px;
+	cursor:pointer;
 }
 .activeLayer{
-	background-color:#333333;
+	background-color:#222222;
 }
 
 .flatBtn{
@@ -65,6 +92,11 @@ input{
 	background-color:#FFFFFF;
 }
 
+.deleteLayerBtn{
+	width:20px;
+	height:20px;
+	float:right;
+}
 
 #renderContainer{
 	z-index: -1;
@@ -85,8 +117,8 @@ input{
 }
 
 .btn{
-	width:40px;
-	height:40px; 
+	width:45px;
+	height:45px; 
 	border:2px solid rgba(255,255,255,.05); 
 	text-align:center;
 	line-height:45px;
